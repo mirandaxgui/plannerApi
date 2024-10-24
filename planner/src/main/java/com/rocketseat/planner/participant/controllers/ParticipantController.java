@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rocketseat.planner.participant.ParticipantEntity;
 import com.rocketseat.planner.participant.ParticipantRepository;
-import com.rocketseat.planner.participant.ParticipantRequestPayload;
+import com.rocketseat.planner.participant.dtos.ParticipantRequestPayloadDTO;
 import com.rocketseat.planner.participant.services.CreateParticipantService;
 
 import jakarta.validation.Valid;
@@ -40,7 +40,7 @@ public class ParticipantController {
     }
 
     @PostMapping("/{id}/confirm")
-    public ResponseEntity<ParticipantEntity> confirmParticipant(@PathVariable UUID id, @RequestBody ParticipantRequestPayload payload){
+    public ResponseEntity<ParticipantEntity> confirmParticipant(@PathVariable UUID id, @RequestBody ParticipantRequestPayloadDTO payload){
         Optional<ParticipantEntity> participant = this.repository.findById(id);
 
         if (participant.isPresent()) {

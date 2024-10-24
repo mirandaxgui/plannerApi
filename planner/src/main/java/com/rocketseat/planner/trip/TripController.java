@@ -27,9 +27,9 @@ import com.rocketseat.planner.link.LinkData;
 import com.rocketseat.planner.link.LinkRequestPayload;
 import com.rocketseat.planner.link.LinkResponse;
 import com.rocketseat.planner.link.LinkService;
-import com.rocketseat.planner.participant.ParticipantRequestPayload;
 import com.rocketseat.planner.participant.dtos.ParticipantCreateResponseDTO;
 import com.rocketseat.planner.participant.dtos.ParticipantDataDTO;
+import com.rocketseat.planner.participant.dtos.ParticipantRequestPayloadDTO;
 import com.rocketseat.planner.participant.services.ApplyGuestToEventService;
 
 @RestController
@@ -146,7 +146,7 @@ public class TripController {
     // PARTICIPANT
 
     @PostMapping("/{id}/invite")
-    public ResponseEntity<ParticipantCreateResponseDTO> inviteParticipant(@PathVariable UUID id, @RequestBody ParticipantRequestPayload payload){
+    public ResponseEntity<ParticipantCreateResponseDTO> inviteParticipant(@PathVariable UUID id, @RequestBody ParticipantRequestPayloadDTO payload){
 
         Optional<Trip> trip = this.repository.findById(id);
 

@@ -26,30 +26,27 @@ public class CreateTripService {
     private ParticipantRepository participantRepository;
 
     public ResponseEntity<TripCreateResponseDTO> createTrip(TripRequestPayloadDTO payload) {
-      try {
-          var email = payload.owner_email();
-          
-          // Verifica se o participante existe
-          var participant = this.participantRepository.findByEmail(email);
-          if (participant.isPresent()) {
-              TripEntity tripEntity = TripEntity.builder()
-                  .destination(payload.destination())
-                  .isConfirmed(false)
-                  .ownerEmail(payload.owner_email())
-                  .ownerName(payload.owner_name())
-                  .startsAt(LocalDateTime.parse(payload.starts_at(), DateTimeFormatter.ISO_DATE_TIME))
-                  .endsAt(LocalDateTime.parse(payload.ends_at(), DateTimeFormatter.ISO_DATE_TIME))
-                  .build();
-              
-              this.tripRepository.save(tripEntity);
-              this.applyGuestToEventService.registerParticipantsToEvent(payload.emails_to_invite(), tripEntity);
-              
-              return ResponseEntity.ok(new TripCreateResponseDTO(tripEntity.getId()));
-            } else {
-              throw new UserNotFoundException();
-          }
-      } catch (Exception e) {
-          throw new UserNotFoundException();
-      }
+
+        var email = payload.owner_email();
+        
+        var participant = this.participantRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    throw new UserNotFoundException();
+                });
+
+        TripEntity tripEntity = TripEntity.builder()
+                .destination(payload.destination())
+                .isConfirmed(false)
+                .ownerEmail(payload.owner_email())
+                .ownerName(payload.owner_name())
+                .startsAt(LocalDateTime.parse(payload.starts_at(), DateTimeFormatter.ISO_DATE_TIME))
+                .endsAt(LocalDateTime.parse(payload.ends_at(), DateTimeFormatter.ISO_DATE_TIME))
+                .build();
+
+        this.tripRepository.save(tripEntity);
+        this.applyGuestToEventService.registerParticipantsToEvent(payload.emails_to_invite(), tripEntity);
+
+        return ResponseEntity.ok(new TripCreateResponseDTO(tripEntity.getId()));
+
     }
 }

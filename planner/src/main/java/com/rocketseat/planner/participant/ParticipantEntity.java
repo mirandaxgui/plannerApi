@@ -2,6 +2,8 @@ package com.rocketseat.planner.participant;
 
 import java.util.UUID;
 
+import org.hibernate.validator.constraints.Length;
+
 import com.rocketseat.planner.trip.TripEntity;
 
 import jakarta.persistence.Column;
@@ -35,6 +37,10 @@ public class ParticipantEntity {
     @Column(nullable = false)
     @Email(message = "O campo [email] deve conter um e-mail válido")
     private String email;
+
+    @Length(min = 10, max = 100, message = "A senha deve conter entre (10) e (100) caracteres")
+    @Column(name = "password")
+    private String password;
 
     @ManyToOne
     @JoinColumn(name = "trip_id")

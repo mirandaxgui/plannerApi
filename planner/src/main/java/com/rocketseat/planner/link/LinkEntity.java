@@ -11,19 +11,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "links")
+@Entity(name = "links")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Link {
+public class LinkEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -38,7 +36,7 @@ public class Link {
     @JoinColumn(name = "trip_id", nullable = false)
     private TripEntity trip;
 
-    Link(String title, String url, TripEntity trip){
+    LinkEntity(String title, String url, TripEntity trip){
         this.title = title;
         this.url = url;
         this.trip = trip;

@@ -18,7 +18,7 @@ public class LinkService {
     private LinkRepository repository;
 
     public LinkResponseDTO registerLink(LinkRequestPayloadDTO payload, TripEntity trip){
-        Link newLink = new Link(payload.title(), payload.url(), trip);
+        LinkEntity newLink = new LinkEntity(payload.title(), payload.url(), trip);
 
         repository.save(newLink);
 
@@ -29,11 +29,11 @@ public class LinkService {
         return repository.findByTripId(tripId).stream().map(link -> new LinkDataDTO(link.getId(), link.getTitle(), link.getUrl())).toList();
     }
 
-    public Optional<Link> findById(UUID linkId) {
+    public Optional<LinkEntity> findById(UUID linkId) {
         return repository.findById(linkId);
     }
 
-    public void deleteLink(Link link) {
+    public void deleteLink(LinkEntity link) {
         repository.delete(link);
     }
 }

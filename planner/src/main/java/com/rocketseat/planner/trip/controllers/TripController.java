@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rocketseat.planner.activity.Activity;
-import com.rocketseat.planner.activity.ActivityData;
-import com.rocketseat.planner.activity.ActivityRequestPayload;
-import com.rocketseat.planner.activity.ActivityResponse;
+import com.rocketseat.planner.activity.ActivityEntity;
 import com.rocketseat.planner.activity.ActivityService;
-import com.rocketseat.planner.link.Link;
+import com.rocketseat.planner.activity.dtos.ActivityDataDTO;
+import com.rocketseat.planner.activity.dtos.ActivityRequestPayloadDTO;
+import com.rocketseat.planner.activity.dtos.ActivityResponseDTO;
+import com.rocketseat.planner.link.LinkEntity;
 import com.rocketseat.planner.link.LinkService;
 import com.rocketseat.planner.link.dtos.LinkDataDTO;
 import com.rocketseat.planner.link.dtos.LinkRequestPayloadDTO;
@@ -109,14 +109,14 @@ public class TripController {
     // ACTIVITY
 
     @PostMapping("/{id}/activities")
-    public ResponseEntity<ActivityResponse> registerActivity(@PathVariable UUID id, @RequestBody ActivityRequestPayload payload){
+    public ResponseEntity<ActivityResponseDTO> registerActivity(@PathVariable UUID id, @RequestBody ActivityRequestPayloadDTO payload){
 
         Optional<TripEntity> trip = this.repository.findById(id);
 
         if (trip.isPresent()){
             TripEntity rawTrip = trip.get();
 
-            ActivityResponse activityResponse = this.activityService.registerActivity(payload, rawTrip);
+            ActivityResponseDTO activityResponse = this.activityService.registerActivity(payload, rawTrip);
 
             return ResponseEntity.ok(activityResponse);
         }
@@ -125,11 +125,11 @@ public class TripController {
     }
 
     @DeleteMapping("/{tripId}/activities/{activityId}")
-    public ResponseEntity<Activity> deleteActivity(@PathVariable UUID tripId, @PathVariable UUID activityId) {
+    public ResponseEntity<ActivityEntity> deleteActivity(@PathVariable UUID tripId, @PathVariable UUID activityId) {
         Optional<TripEntity> trip = this.repository.findById(tripId);
 
         if (trip.isPresent()) {
-            Optional<Activity> activity = this.activityService.findById(activityId);
+            Optional<ActivityEntity> activity = this.activityService.findById(activityId);
 
             if (activity.isPresent() && activity.get().getTrip().getId().equals(tripId)) {
                 this.activityService.deleteActivity(activity.get());
@@ -141,8 +141,8 @@ public class TripController {
     }
 
     @GetMapping("/{id}/activities")
-    public ResponseEntity<List<ActivityData>> getAllActivities(@PathVariable UUID id){
-        List<ActivityData> activityDataList = this.activityService.getAllActivitiesFromId(id);
+    public ResponseEntity<List<ActivityDataDTO>> getAllActivities(@PathVariable UUID id){
+        List<ActivityDataDTO> activityDataList = this.activityService.getAllActivitiesFromId(id);
 
         return ResponseEntity.ok(activityDataList);
     }
@@ -193,11 +193,11 @@ public class TripController {
     }
 
     @DeleteMapping("/{tripId}/links/{linkId}")
-    public ResponseEntity<Link> deleteLink(@PathVariable UUID tripId, @PathVariable UUID linkId) {
+    public ResponseEntity<LinkEntity> deleteLink(@PathVariable UUID tripId, @PathVariable UUID linkId) {
         Optional<TripEntity> trip = this.repository.findById(tripId);
 
         if (trip.isPresent()) {
-            Optional<Link> link = this.linkService.findById(linkId);
+            Optional<LinkEntity> link = this.linkService.findById(linkId);
 
             if (link.isPresent() && link.get().getTrip().getId().equals(tripId)) {
                 this.linkService.deleteLink(link.get());

@@ -13,19 +13,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "activities")
+@Entity(name = "activities")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Activity {
+public class ActivityEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -40,7 +38,7 @@ public class Activity {
     @JoinColumn(name = "trip_id", nullable = false)
     private TripEntity trip;
 
-    public Activity(String title, String occursAt, TripEntity trip){
+    public ActivityEntity(String title, String occursAt, TripEntity trip){
         this.title = title;
         this.occursAt = LocalDateTime.parse(occursAt, DateTimeFormatter.ISO_DATE_TIME);
         this.trip = trip;

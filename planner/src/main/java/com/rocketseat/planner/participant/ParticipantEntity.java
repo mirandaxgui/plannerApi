@@ -2,8 +2,6 @@ package com.rocketseat.planner.participant;
 
 import java.util.UUID;
 
-import org.hibernate.validator.constraints.Length;
-
 import com.rocketseat.planner.trip.TripEntity;
 
 import jakarta.persistence.Column;

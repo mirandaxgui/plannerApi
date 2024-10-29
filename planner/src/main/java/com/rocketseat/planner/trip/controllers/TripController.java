@@ -23,10 +23,10 @@ import com.rocketseat.planner.activity.ActivityRequestPayload;
 import com.rocketseat.planner.activity.ActivityResponse;
 import com.rocketseat.planner.activity.ActivityService;
 import com.rocketseat.planner.link.Link;
-import com.rocketseat.planner.link.LinkData;
-import com.rocketseat.planner.link.LinkRequestPayload;
-import com.rocketseat.planner.link.LinkResponse;
 import com.rocketseat.planner.link.LinkService;
+import com.rocketseat.planner.link.dtos.LinkDataDTO;
+import com.rocketseat.planner.link.dtos.LinkRequestPayloadDTO;
+import com.rocketseat.planner.link.dtos.LinkResponseDTO;
 import com.rocketseat.planner.participant.dtos.ParticipantCreateResponseDTO;
 import com.rocketseat.planner.participant.dtos.ParticipantDataDTO;
 import com.rocketseat.planner.participant.dtos.ParticipantRequestPayloadDTO;
@@ -61,7 +61,6 @@ public class TripController {
         try {
             return this.createTripService.createTrip(tripRequestPayload); 
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.badRequest().body(null);
     }}
 
@@ -179,13 +178,13 @@ public class TripController {
     //LINKS
 
     @PostMapping("/{id}/links")
-    public ResponseEntity<LinkResponse> registerLink(@PathVariable UUID id, @RequestBody LinkRequestPayload payload){
+    public ResponseEntity<LinkResponseDTO> registerLink(@PathVariable UUID id, @RequestBody LinkRequestPayloadDTO payload){
         Optional<TripEntity> trip = this.repository.findById(id);
 
         if (trip.isPresent()){
             TripEntity rawTrip = trip.get();
 
-            LinkResponse linkResponse = this.linkService.registerLink(payload, rawTrip);
+            LinkResponseDTO linkResponse = this.linkService.registerLink(payload, rawTrip);
 
             return ResponseEntity.ok(linkResponse);
         }
@@ -211,8 +210,8 @@ public class TripController {
 
 
     @GetMapping("/{id}/links")
-    public ResponseEntity<List<LinkData>> getAllLinks(@PathVariable UUID id){
-        List<LinkData> linkDataList = this.linkService.getAllLinksFromTrip(id);
+    public ResponseEntity<List<LinkDataDTO>> getAllLinks(@PathVariable UUID id){
+        List<LinkDataDTO> linkDataList = this.linkService.getAllLinksFromTrip(id);
 
         return ResponseEntity.ok(linkDataList);
     }

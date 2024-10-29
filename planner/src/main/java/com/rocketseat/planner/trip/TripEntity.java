@@ -1,10 +1,7 @@
 package com.rocketseat.planner.trip;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-
-import com.rocketseat.planner.trip.dtos.TripRequestPayloadDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

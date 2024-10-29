@@ -1,19 +1,20 @@
 package com.rocketseat.planner.link;
 
-import com.rocketseat.planner.trip.Trip;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.rocketseat.planner.trip.TripEntity;
 
 @Service
 public class LinkService {
     @Autowired
     private LinkRepository repository;
 
-    public LinkResponse registerLink(LinkRequestPayload payload, Trip trip){
+    public LinkResponse registerLink(LinkRequestPayload payload, TripEntity trip){
         Link newLink = new Link(payload.title(), payload.url(), trip);
 
         repository.save(newLink);

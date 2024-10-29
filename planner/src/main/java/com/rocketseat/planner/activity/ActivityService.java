@@ -1,12 +1,13 @@
 package com.rocketseat.planner.activity;
 
-import com.rocketseat.planner.trip.Trip;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.rocketseat.planner.trip.TripEntity;
 
 @Service
 public class ActivityService {
@@ -14,7 +15,7 @@ public class ActivityService {
     @Autowired
     private ActivityRepository repository;
 
-    public ActivityResponse registerActivity(ActivityRequestPayload payload, Trip trip){
+    public ActivityResponse registerActivity(ActivityRequestPayload payload, TripEntity trip){
         Activity newActivity = new Activity(payload.title(), payload.occurs_at(), trip);
 
         this.repository.save(newActivity);

@@ -1,15 +1,23 @@
 package com.rocketseat.planner.activity;
 
-import com.rocketseat.planner.trip.Trip;
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
+import com.rocketseat.planner.trip.TripEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 @Entity
 @Table(name = "activities")
@@ -30,9 +38,9 @@ public class Activity {
 
     @ManyToOne
     @JoinColumn(name = "trip_id", nullable = false)
-    private Trip trip;
+    private TripEntity trip;
 
-    public Activity(String title, String occursAt, Trip trip){
+    public Activity(String title, String occursAt, TripEntity trip){
         this.title = title;
         this.occursAt = LocalDateTime.parse(occursAt, DateTimeFormatter.ISO_DATE_TIME);
         this.trip = trip;

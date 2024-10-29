@@ -10,7 +10,7 @@ import com.rocketseat.planner.participant.ParticipantEntity;
 import com.rocketseat.planner.participant.ParticipantRepository;
 import com.rocketseat.planner.participant.dtos.ParticipantCreateResponseDTO;
 import com.rocketseat.planner.participant.dtos.ParticipantDataDTO;
-import com.rocketseat.planner.trip.Trip;
+import com.rocketseat.planner.trip.TripEntity;
 
 @Service
 public class ApplyGuestToEventService {
@@ -18,7 +18,7 @@ public class ApplyGuestToEventService {
     @Autowired
     private ParticipantRepository participantRepository;
 
-    public void registerParticipantsToEvent(List<String> participantsToInvite, Trip trip) {
+    public void registerParticipantsToEvent(List<String> participantsToInvite, TripEntity trip) {
         List<ParticipantEntity> participants = participantsToInvite.stream().map(email -> new ParticipantEntity(email, trip)).toList();
 
         this.participantRepository.saveAll(participants);
@@ -29,7 +29,7 @@ public class ApplyGuestToEventService {
         }
     }
 
-    public ParticipantCreateResponseDTO registerParticipantToEvent(String email, Trip trip){
+    public ParticipantCreateResponseDTO registerParticipantToEvent(String email, TripEntity trip){
         ParticipantEntity newParticipant = new ParticipantEntity(email, trip);
         this.participantRepository.save(newParticipant);
 

@@ -10,6 +10,7 @@ import com.rocketseat.planner.participant.ParticipantEntity;
 import com.rocketseat.planner.participant.ParticipantRepository;
 import com.rocketseat.planner.participant.dtos.ParticipantCreateResponseDTO;
 import com.rocketseat.planner.participant.dtos.ParticipantDataDTO;
+import com.rocketseat.planner.providers.EmailSender;
 import com.rocketseat.planner.trip.TripEntity;
 
 @Service
@@ -38,7 +39,11 @@ public class ApplyGuestToEventService {
 
     public void triggerConfirmationEmailToParticipants(UUID tripId){}
 
-    public void triggerConfirmationEmailToParticipant(String email){};
+    public void triggerConfirmationEmailToParticipant(String email, String participantId){
+        String confirmationLink = "localhost:8080/participant/" + participantId + "/confirm";
+        String message = "Olá! Você foi convidado para uma viagem. Confirme sua participação no link:" + confirmationLink; 
+        EmailSender.sendEmail(email, "Planner Viagens", message);
+    };
 
     public List<ParticipantDataDTO> getAllParticipantsFromEvent(UUID tripId){
         return this.participantRepository.findByTripId(tripId).stream().map(participant -> new ParticipantDataDTO(participant.getId(), participant.getName(), participant.getEmail(), participant.getIsConfirmed())).toList();

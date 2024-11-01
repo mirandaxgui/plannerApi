@@ -162,7 +162,7 @@ public class TripController {
 
             ParticipantCreateResponseDTO participantResponse = this.applyGuestToEvent.registerParticipantToEvent(payload.email(), rawTrip);
 
-            if(rawTrip.getIsConfirmed()) this.applyGuestToEvent.triggerConfirmationEmailToParticipant(payload.email());
+           this.applyGuestToEvent.triggerConfirmationEmailToParticipant(payload.email(), participantResponse.id().toString());
 
             return ResponseEntity.ok(participantResponse);
         }

@@ -37,7 +37,8 @@ public class ApplyGuestToEventService {
         return new ParticipantCreateResponseDTO((newParticipant.getId()));
     }
 
-    public void triggerConfirmationEmailToParticipants(UUID tripId){}
+    public void triggerConfirmationEmailToParticipants(UUID tripId){
+    }
 
     public void triggerConfirmationEmailToParticipant(String email, String participantId){
         String confirmationLink = "localhost:8080/participant/" + participantId + "/confirm";

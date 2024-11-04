@@ -47,7 +47,7 @@ public class ParticipantEntity {
     private TripEntity trip;
 
     public ParticipantEntity(String email, TripEntity trip){
-        this.email = email;
+        this.email = email.toLowerCase();
         this.trip = trip;
         this.name = "";
         this.isConfirmed = false;

@@ -22,6 +22,8 @@ public class CreateParticipantService {
         .ifPresent(user -> {
             throw new UserFoundException();
         });
+        var email = participant.getEmail().toLowerCase();
+        participant.setEmail(email);
         var password = passwordEncoder.encode(participant.getPassword());
         participant.setPassword(password);
         return this.participantRepository.save(participant);

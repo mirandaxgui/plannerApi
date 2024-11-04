@@ -32,6 +32,8 @@ public class ApplyGuestToEventService {
 
     public ParticipantCreateResponseDTO registerParticipantToEvent(String email, TripEntity trip){
         ParticipantEntity newParticipant = new ParticipantEntity(email, trip);
+        email = newParticipant.getEmail().toLowerCase();
+        newParticipant.setEmail(email);
         this.participantRepository.save(newParticipant);
 
         return new ParticipantCreateResponseDTO((newParticipant.getId()));

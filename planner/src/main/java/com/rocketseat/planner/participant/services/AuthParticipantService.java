@@ -33,7 +33,7 @@ public class AuthParticipantService {
   private String secretkey;
 
   public String execute(AuthParticipantDTO authParticipantDTO) throws AuthenticationException{
-    var participant = this.participantRepository.findByEmail(authParticipantDTO.getEmail()).orElseThrow(() -> {
+    var participant = this.participantRepository.findByEmail(authParticipantDTO.getEmail().toLowerCase()).orElseThrow(() -> {
       throw new UsernameNotFoundException("Email/password incorrect");
     });
 

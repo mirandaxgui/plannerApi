@@ -27,18 +27,20 @@ public class CreateTripService {
 
     public ResponseEntity<TripCreateResponseDTO> createTrip(TripRequestPayloadDTO payload) {
 
-        var email = payload.owner_email();
-        
+        var email = payload.owner_email().toLowerCase();
+        var name = payload.owner_name();
         var participant = this.participantRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     throw new UserNotFoundException();
                 });
-
+        if(!name.equalsIgnoreCase(participant.getName())){
+            throw new UserNotFoundException();
+        }
         TripEntity tripEntity = TripEntity.builder()
                 .destination(payload.destination())
                 .isConfirmed(false)
-                .ownerEmail(payload.owner_email())
-                .ownerName(payload.owner_name())
+                .ownerEmail(participant.getEmail())
+                .ownerName(participant.getName())
                 .startsAt(LocalDateTime.parse(payload.starts_at(), DateTimeFormatter.ISO_DATE_TIME))
                 .endsAt(LocalDateTime.parse(payload.ends_at(), DateTimeFormatter.ISO_DATE_TIME))
                 .build();

@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,7 +32,7 @@ public class ParticipantController {
     private CreateParticipantService createParticipantService;
 
     @PostMapping("/register")
-    public ResponseEntity<Object> createParticipant(@Valid @RequestBody ParticipantEntity participantEntity){
+    public ResponseEntity<Object> createParticipant(@Valid @RequestBody ParticipantEntity participantEntity) {
         try {
             var result = this.createParticipantService.createParticipant(participantEntity);
             return ResponseEntity.ok().body(result);
@@ -42,19 +43,21 @@ public class ParticipantController {
 
     @PostMapping("/{id}/confirm")
     @PreAuthorize("hasRole('PARTICIPANT')")
-    public ResponseEntity<ParticipantEntity> confirmParticipant(@PathVariable UUID id, @RequestBody ParticipantRequestPayloadDTO payload){
+    public ResponseEntity<Object> confirmParticipant(@PathVariable UUID id, @RequestBody ParticipantRequestPayloadDTO payload) {
         Optional<ParticipantEntity> participant = this.repository.findById(id);
 
         if (participant.isPresent()) {
             ParticipantEntity rawParticipant = participant.get();
-            rawParticipant.setIsConfirmed(true);
-            rawParticipant.setName(payload.name());
+            if (payload.email().equals(rawParticipant.getEmail())) {
+                rawParticipant.setIsConfirmed(true);
+                rawParticipant.setName(payload.name());
 
-            this.repository.save(rawParticipant);
+                this.repository.save(rawParticipant);
 
-            return ResponseEntity.ok(rawParticipant);
+                return ResponseEntity.ok(rawParticipant);
+            }
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Participant email is incorrect");
     }
 
     @DeleteMapping("/{id}")

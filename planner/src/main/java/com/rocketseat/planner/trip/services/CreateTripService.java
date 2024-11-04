@@ -33,9 +33,11 @@ public class CreateTripService {
                 .orElseThrow(() -> {
                     throw new UserNotFoundException();
                 });
-        if(!name.equalsIgnoreCase(participant.getName())){
+        if (!name.equalsIgnoreCase(participant.getName())) {
             throw new UserNotFoundException();
         }
+        participant.setIsConfirmed(true);
+        this.participantRepository.save(participant);
         TripEntity tripEntity = TripEntity.builder()
                 .destination(payload.destination())
                 .isConfirmed(false)
@@ -47,7 +49,7 @@ public class CreateTripService {
 
         this.tripRepository.save(tripEntity);
         this.applyGuestToEventService.registerParticipantsToEvent(payload.emails_to_invite(), tripEntity);
-
+        
         return ResponseEntity.ok(new TripCreateResponseDTO(tripEntity.getId()));
 
     }

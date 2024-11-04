@@ -42,28 +42,28 @@ public class TripController {
     private CreateTripService createTripService;
 
     //TRIPS;
-
     @PostMapping("/")
     @PreAuthorize("hasRole('PARTICIPANT')")
-    public ResponseEntity<TripCreateResponseDTO> createTrip(@Valid @RequestBody TripRequestPayloadDTO tripRequestPayload){
+    public ResponseEntity<TripCreateResponseDTO> createTrip(@Valid @RequestBody TripRequestPayloadDTO tripRequestPayload) {
         try {
-            return this.createTripService.createTrip(tripRequestPayload); 
+            return this.createTripService.createTrip(tripRequestPayload);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
-    }}
+        }
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TripEntity> getTripDetails(@PathVariable UUID id){
+    public ResponseEntity<TripEntity> getTripDetails(@PathVariable UUID id) {
         Optional<TripEntity> trip = this.repository.findById(id);
 
         return trip.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TripEntity> updateTrip(@PathVariable UUID id, @RequestBody TripRequestPayloadDTO payload){
+    public ResponseEntity<TripEntity> updateTrip(@PathVariable UUID id, @RequestBody TripRequestPayloadDTO payload) {
         Optional<TripEntity> trip = this.repository.findById(id);
 
-        if (trip.isPresent()){
+        if (trip.isPresent()) {
             TripEntity rawTrip = trip.get();
             rawTrip.setEndsAt(LocalDateTime.parse(payload.ends_at(), DateTimeFormatter.ISO_DATE_TIME));
             rawTrip.setStartsAt(LocalDateTime.parse(payload.starts_at(), DateTimeFormatter.ISO_DATE_TIME));
@@ -74,19 +74,24 @@ public class TripController {
             return ResponseEntity.ok(rawTrip);
         }
 
-        return  ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/{id}/confirm")
-    public ResponseEntity<TripEntity> confirmTrip(@PathVariable UUID id){
+    public ResponseEntity<TripEntity> confirmTrip(@PathVariable UUID id) {
         Optional<TripEntity> trip = this.repository.findById(id);
 
-        if (trip.isPresent()){
+        if (trip.isPresent()) {
             TripEntity rawTrip = trip.get();
             rawTrip.setIsConfirmed(true);
 
             this.repository.save(rawTrip);
-            this.applyGuestToEvent.triggerConfirmationEmailToParticipants(id);
+
+            List<ParticipantDataDTO> participantList = this.applyGuestToEvent.getAllParticipantsFromEvent(id);
+            for (ParticipantDataDTO participant : participantList) {
+                var email = participant.email();
+                this.applyGuestToEvent.triggerConfirmationEmailToParticipants(email, rawTrip);
+            }
 
             return ResponseEntity.ok(rawTrip);
         }
@@ -95,18 +100,17 @@ public class TripController {
     }
 
     // PARTICIPANT
-
     @PostMapping("/{id}/invite")
-    public ResponseEntity<ParticipantCreateResponseDTO> inviteParticipant(@PathVariable UUID id, @RequestBody ParticipantRequestPayloadDTO payload){
+    public ResponseEntity<ParticipantCreateResponseDTO> inviteParticipant(@PathVariable UUID id, @RequestBody ParticipantRequestPayloadDTO payload) {
 
         Optional<TripEntity> trip = this.repository.findById(id);
 
-        if (trip.isPresent()){
+        if (trip.isPresent()) {
             TripEntity rawTrip = trip.get();
 
             ParticipantCreateResponseDTO participantResponse = this.applyGuestToEvent.registerParticipantToEvent(payload.email(), rawTrip);
 
-           this.applyGuestToEvent.triggerConfirmationEmailToParticipant(payload.email(), participantResponse.id().toString());
+            this.applyGuestToEvent.triggerConfirmationEmailToParticipant(payload.email(), participantResponse.id(), rawTrip);
 
             return ResponseEntity.ok(participantResponse);
         }
@@ -115,7 +119,7 @@ public class TripController {
     }
 
     @GetMapping("/{id}/participants")
-    public ResponseEntity<List<ParticipantDataDTO>> getAllParticipants(@PathVariable UUID id){
+    public ResponseEntity<List<ParticipantDataDTO>> getAllParticipants(@PathVariable UUID id) {
         List<ParticipantDataDTO> participantList = this.applyGuestToEvent.getAllParticipantsFromEvent(id);
 
         return ResponseEntity.ok(participantList);

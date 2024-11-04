@@ -1,5 +1,7 @@
 package com.rocketseat.planner.participant.controllers;
 
+import javax.naming.AuthenticationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +39,7 @@ public class AuthParticipantController {
       response.addCookie(jwtCookie);
 
       return ResponseEntity.ok().body("Autenticação realizada com sucesso!");
-    } catch (Exception e) {
+    } catch (AuthenticationException e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
   }

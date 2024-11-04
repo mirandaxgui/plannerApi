@@ -1,6 +1,7 @@
 package com.rocketseat.planner.participant.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,35 +21,56 @@ public class ApplyGuestToEventService {
     private ParticipantRepository participantRepository;
 
     public void registerParticipantsToEvent(List<String> participantsToInvite, TripEntity trip) {
-        List<ParticipantEntity> participants = participantsToInvite.stream().map(email -> new ParticipantEntity(email, trip)).toList();
+        
+        for (String email : participantsToInvite) {
 
-        this.participantRepository.saveAll(participants);
+            Optional<ParticipantEntity> optionalParticipant = participantRepository.findByEmail(email.toLowerCase());
 
-        int i;
-        for (i = 0; i < participants.size() ; i++ ) {
-            System.out.println(participants.get(i).getId());
+            if (optionalParticipant.isPresent()) {
+                ParticipantEntity existingParticipant = optionalParticipant.get();
+                existingParticipant.setTrip(trip);
+                participantRepository.save(existingParticipant);
+                triggerConfirmationEmailToParticipant(email, existingParticipant.getId(), trip);
+            } else {
+                ParticipantEntity newParticipant = new ParticipantEntity(email.toLowerCase(), trip);
+                participantRepository.save(newParticipant);
+                triggerConfirmationEmailToParticipant(email, newParticipant.getId(), trip);
+
+            }
         }
+
     }
 
-    public ParticipantCreateResponseDTO registerParticipantToEvent(String email, TripEntity trip){
-        ParticipantEntity newParticipant = new ParticipantEntity(email, trip);
-        email = newParticipant.getEmail().toLowerCase();
-        newParticipant.setEmail(email);
-        this.participantRepository.save(newParticipant);
+    public ParticipantCreateResponseDTO registerParticipantToEvent(String emailParticipant, TripEntity trip) {
+        String email = emailParticipant.toLowerCase(); // Converte o email para minúsculas
+        Optional<ParticipantEntity> optionalParticipant = this.participantRepository.findByEmail(email);
 
-        return new ParticipantCreateResponseDTO((newParticipant.getId()));
+        return optionalParticipant.map(user -> {
+            user.setTrip(trip); // Atualiza a viagem do participante existente
+            participantRepository.save(user);
+            return new ParticipantCreateResponseDTO(user.getId()); // Retorna o ID do participante existente
+        }).orElseGet(() -> {
+            ParticipantEntity newParticipant = new ParticipantEntity(email, trip);
+            this.participantRepository.save(newParticipant); // Salva o novo participante
+            return new ParticipantCreateResponseDTO(newParticipant.getId()); // Retorna o ID do novo participante
+        });
     }
 
-    public void triggerConfirmationEmailToParticipants(UUID tripId){
-    }
-
-    public void triggerConfirmationEmailToParticipant(String email, String participantId){
-        String confirmationLink = "localhost:8080/participant/" + participantId + "/confirm";
-        String message = "Olá! Você foi convidado para uma viagem. Confirme sua participação no link:" + confirmationLink; 
+    public void triggerConfirmationEmailToParticipants(String email, TripEntity trip) {
+        String message = String.format("Olá, a sua participação na viagem de %s para %s foi confirmada!", trip.getOwnerName(), trip.getDestination());
         EmailSender.sendEmail(email, "Planner Viagens", message);
-    };
+    }
 
-    public List<ParticipantDataDTO> getAllParticipantsFromEvent(UUID tripId){
+    public void triggerConfirmationEmailToParticipant(String email, UUID participantId, TripEntity trip) {
+        //MUDAR O LINK CONFORME DEPLOY
+        String confirmationLink = "localhost:8080/participant/" + participantId + "/confirm";
+        String message = String.format("Olá, você foi convidado para participar da viagem de %s para %s. Por favor, confirme sua presença no link: \n", trip.getOwnerName(), trip.getDestination()) + confirmationLink;
+        EmailSender.sendEmail(email, "Planner Viagens", message);
+    }
+
+    ;
+
+    public List<ParticipantDataDTO> getAllParticipantsFromEvent(UUID tripId) {
         return this.participantRepository.findByTripId(tripId).stream().map(participant -> new ParticipantDataDTO(participant.getId(), participant.getName(), participant.getEmail(), participant.getIsConfirmed())).toList();
     }
 }

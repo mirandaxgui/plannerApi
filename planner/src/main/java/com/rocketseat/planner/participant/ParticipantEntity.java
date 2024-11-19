@@ -38,7 +38,7 @@ public class ParticipantEntity {
     @Email(message = "O campo [email] deve conter um e-mail válido")
     private String email;
 
-    @Length(min = 10, max = 100, message = "A senha deve conter entre (10) e (100) caracteres")
+    @Length(min = 6, max = 100, message = "A senha deve conter entre (6) e (100) caracteres")
     @Column(name = "password")
     private String password;
 

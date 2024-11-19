@@ -25,8 +25,15 @@ public class JWTParticipantProvider {
           .verify(token);
       return tokenDecoded;
     } catch (JWTVerificationException ex) {
-      ex.printStackTrace();
       return null;
     }
   }
+  public String getEmailFromToken(String token) {
+    DecodedJWT decodedJWT = validateToken(token);
+    return decodedJWT != null ? decodedJWT.getClaim("email").asString() : null;
+  }
+  public String getNameFromToken(String token) {
+    DecodedJWT decodedJWT = validateToken(token);
+    return decodedJWT != null ? decodedJWT.getClaim("name").asString() : null;
+}
 }

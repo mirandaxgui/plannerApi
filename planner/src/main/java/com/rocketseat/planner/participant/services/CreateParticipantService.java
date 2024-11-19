@@ -10,18 +10,31 @@ import com.rocketseat.planner.participant.ParticipantRepository;
 
 @Service
 public class CreateParticipantService {
-    
+
     @Autowired
     private ParticipantRepository participantRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public ParticipantEntity createParticipant(ParticipantEntity participant){
-        this.participantRepository.findByEmail(participant.getEmail())
-        .ifPresent(user -> {
-            throw new UserFoundException();
-        });
+    public ParticipantEntity createParticipant(ParticipantEntity participant) {
+        
+        var existingParticipantOpt = this.participantRepository.findByEmail(participant.getEmail());
+
+        if (existingParticipantOpt.isPresent()) {
+            var existingParticipant = existingParticipantOpt.get();
+
+            if (existingParticipant.getPassword() != null) {
+                throw new UserFoundException();
+            }
+            existingParticipant.setEmail(participant.getEmail().toLowerCase());
+            existingParticipant.setPassword(passwordEncoder.encode(participant.getPassword()));
+            existingParticipant.setIsConfirmed(false);
+            existingParticipant.setName(participant.getName());
+
+            return this.participantRepository.save(existingParticipant);
+        }
+
         var email = participant.getEmail().toLowerCase();
         participant.setEmail(email);
         var password = passwordEncoder.encode(participant.getPassword());

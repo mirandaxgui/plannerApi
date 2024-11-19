@@ -49,6 +49,8 @@ public class AuthParticipantService {
     .withExpiresAt(expiresIn)
     .withSubject(participant.getId().toString())
     .withClaim("roles", Arrays.asList("PARTICIPANT"))
+    .withClaim("email", participant.getEmail())
+    .withClaim("name", participant.getName())
     .sign(algorithm);
     
     return token;

@@ -43,6 +43,9 @@ public class AuthParticipantService {
       throw new AuthenticationException();
     }
 
+    participant.setIsConfirmed(true);
+    this.participantRepository.save(participant);
+    
     Algorithm algorithm = Algorithm.HMAC256(secretkey);
     var expiresIn = Instant.now().plus(Duration.ofHours(8));
     var token = JWT.create().withIssuer("planner")

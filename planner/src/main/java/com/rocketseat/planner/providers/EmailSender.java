@@ -50,7 +50,6 @@ public class EmailSender {
 
         } catch (MessagingException e) {
           System.err.println("Erro ao enviar o e-mail: " + e.getMessage());
-          e.printStackTrace();
       }
       
     }

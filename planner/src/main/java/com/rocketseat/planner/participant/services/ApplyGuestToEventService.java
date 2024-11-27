@@ -63,8 +63,8 @@ public class ApplyGuestToEventService {
 
     public void triggerConfirmationEmailToParticipant(String email, UUID participantId, TripEntity trip) {
         //MUDAR O LINK CONFORME DEPLOY
-        String confirmationLink = "localhost:8080/participant/" + participantId + "/confirm";
-        String message = String.format("Olá, você foi convidado para participar da viagem de %s para %s. Por favor, confirme sua presença no link: \n", trip.getOwnerName(), trip.getDestination()) + confirmationLink;
+        String confirmationLink = "localhost:8080/trips/" + trip.getId();
+        String message = String.format("Olá, você foi convidado para participar da viagem de %s para %s. Por favor, registre-se para confirmar a sua presença no link: \n", trip.getOwnerName(), trip.getDestination()) + confirmationLink;
         EmailSender.sendEmail(email, "Planner Viagens", message);
     }
 

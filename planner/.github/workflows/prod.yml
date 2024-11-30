@@ -16,8 +16,6 @@ jobs:
         with: 
           distribution: temurin
           java-version: '17'
-      - name: Changing to planner directory
-        run: cd planner
       - name: Build project
         run: mvn clean install
       - name: Login docker

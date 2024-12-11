@@ -30,7 +30,7 @@ public class AuthParticipantController {
       
       // Configurar o token no cookie
       Cookie jwtCookie = new Cookie("token", jwtToken);
-      jwtCookie.setHttpOnly(true); // Impede acesso via JavaScript
+      jwtCookie.setHttpOnly(false); // Impede acesso via JavaScript
       jwtCookie.setSecure(false); // Somente para HTTPS
       jwtCookie.setPath("/"); // Define o cookie para todas as rotas
       jwtCookie.setMaxAge(60 * 60 * 8); // Define a duração do cookie, aqui 8 horas

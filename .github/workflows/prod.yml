@@ -1,6 +1,5 @@
 name: Planner Application
 
-
 on:
   push:
     branches: [main]
@@ -24,10 +23,25 @@ jobs:
         run: docker build -t guimirandadev/planner .
       - name: Publish image
         run: docker push guimirandadev/planner
+
   deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: self-hosted  # Mantenha essa linha para rodar na sua EC2
     steps:
+      # Passo 1: Configure a chave SSH para autenticação
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H your-ec2-public-ip >> ~/.ssh/known_hosts
+        
+      # Passo 2: Acesse a EC2 e copie o keystore para o container
+      - name: Copy keystore to EC2
+        run: |
+          scp -i ~/.ssh/id_rsa /etc/letsencrypt/live/guiplanner.hopto.org/keystore.p12 ubuntu@18.230.184.125:/opt/config/keystore.p12
+
+      # Passo 3: Faça o deploy do Docker na EC2
       - name: Pull image docker hub
         run: docker pull guimirandadev/planner:latest
       - name: Remove container

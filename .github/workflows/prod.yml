@@ -2,7 +2,8 @@ name: Planner Application
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - main
 
 jobs:
   build:
@@ -10,18 +11,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with: 
           distribution: temurin
           java-version: '17'
+
       - name: Build project
         run: mvn clean install
-      - name: Login docker
-        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
-      - name: Build docker image
+
+      - name: Login to Docker
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
         run: docker build -t guimirandadev/planner .
-      - name: Publish image
+
+      - name: Publish image to Docker Hub
         run: docker push guimirandadev/planner
 
   deploy:
@@ -29,22 +35,29 @@ jobs:
     runs-on: self-hosted  # Mantenha essa linha para rodar na sua EC2
     steps:
       # Passo 1: Configure a chave SSH para autenticação
-      - name: Set up SSH key
+      - name: Set up SSH key for EC2
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H your-ec2-public-ip >> ~/.ssh/known_hosts
-        
-      # Passo 2: Acesse a EC2 e copie o keystore para o container
+
+      # Passo 2: Copiar o keystore para a EC2
       - name: Copy keystore to EC2
         run: |
           scp -i ~/.ssh/id_rsa /etc/letsencrypt/live/guiplanner.hopto.org/keystore.p12 ubuntu@18.230.184.125:/opt/config/keystore.p12
 
-      # Passo 3: Faça o deploy do Docker na EC2
-      - name: Pull image docker hub
+      # Passo 3: Deploy do Docker na EC2
+      - name: Pull Docker image from Docker Hub
         run: docker pull guimirandadev/planner:latest
-      - name: Remove container
-        run: docker rm -f planner
-      - name: Run docker container planner
-        run: docker run -d -p 443:443 -e DATABASE_URL=${{secrets.DATABASE_URL}} -e DATABASE_PASSWORD='${{secrets.DATABASE_PASSWORD}}' -e DATABASE_USERNAME=${{secrets.DATABASE_USERNAME}} --name planner guimirandadev/planner
+
+      - name: Remove old container if exists
+        run: docker rm -f planner || true  # Ignore erro caso o container não exista
+
+      - name: Run Docker container on EC2
+        run: |
+          docker run -d -p 443:443 \
+            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            -e DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
+            -e DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }} \
+            --name planner guimirandadev/planner

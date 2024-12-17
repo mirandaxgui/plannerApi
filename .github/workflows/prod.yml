@@ -34,6 +34,9 @@ jobs:
         run: docker rm -f planner
       - name: Run docker container planner
         env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           TOKEN_PARTICIPANT: ${{ secrets.TOKEN_PARTICIPANT }}
           KEY_STORE_PATH: ${{ secrets.KEY_STORE_PATH }}
@@ -42,13 +45,13 @@ jobs:
           KEY_STORE_ALIAS: ${{ secrets.KEY_STORE_ALIAS }}
         run: |
           docker run -d -p 443:443 \
-            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
-            -e DATABASE_PASSWORD='${{ secrets.DATABASE_PASSWORD }}' \
-            -e DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }} \
             -e EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }} \
             -e TOKEN_PARTICIPANT=${{ secrets.TOKEN_PARTICIPANT }} \
             -e KEY_STORE_PATH='${{ secrets.KEY_STORE_PATH }}' \
             -e KEY_STORE_PASSWORD='${{ secrets.KEY_STORE_PASSWORD }}' \
             -e KEY_STORE_TYPE=${{ secrets.KEY_STORE_TYPE }} \
             -e KEY_STORE_ALIAS='${{ secrets.KEY_STORE_ALIAS }}' \
+            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            -e DATABASE_PASSWORD='${{ secrets.DATABASE_PASSWORD }}' \
+            -e DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }} \
             --name planner guimirandadev/planner

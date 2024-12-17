@@ -7,7 +7,6 @@ import java.util.Arrays;
 import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,8 +28,7 @@ public class AuthParticipantService {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  @Value("${security.token.secret.participant}")
-  private String secretKey;
+  private final String secretKey = System.getenv("TOKEN_PARTICIPANT");
 
   public String execute(AuthParticipantDTO authParticipantDTO) throws AuthenticationException{
     var participant = this.participantRepository.findByEmail(authParticipantDTO.getEmail().toLowerCase()).orElseThrow(() -> {

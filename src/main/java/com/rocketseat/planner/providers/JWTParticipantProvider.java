@@ -1,6 +1,5 @@
 package com.rocketseat.planner.providers;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
@@ -11,8 +10,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 @Service
 public class JWTParticipantProvider {
 
-  @Value("${security.token.secret.participant}")
-  private String secretKey;
+  private final String secretKey = System.getenv("TOKEN_PARTICIPANT");
 
   public DecodedJWT validateToken(String token) {
     token = token.replace("Bearer ", "");

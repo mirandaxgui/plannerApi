@@ -20,7 +20,7 @@ public class EmailSender {
         // Configurações do servidor SMTP
         String host = "smtp.gmail.com"; // Altere para o seu servidor SMTP
         final String username = "gui.plannersender@gmail.com"; // Seu e-mail
-        final String password = "ozwe oeki nyfn uqsr"; // Sua senha
+        final String password = System.getenv("EMAIL_PASSWORD"); // Senha do email, agora retirada da variável de ambiente
 
         // Propriedades da conexão
         Properties props = new Properties();

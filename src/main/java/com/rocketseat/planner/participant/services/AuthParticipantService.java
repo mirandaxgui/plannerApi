@@ -30,7 +30,7 @@ public class AuthParticipantService {
   private PasswordEncoder passwordEncoder;
 
   @Value("${security.token.secret.participant}")
-  private String secretkey;
+  private String secretKey;
 
   public String execute(AuthParticipantDTO authParticipantDTO) throws AuthenticationException{
     var participant = this.participantRepository.findByEmail(authParticipantDTO.getEmail().toLowerCase()).orElseThrow(() -> {
@@ -46,7 +46,7 @@ public class AuthParticipantService {
     participant.setIsConfirmed(true);
     this.participantRepository.save(participant);
     
-    Algorithm algorithm = Algorithm.HMAC256(secretkey);
+    Algorithm algorithm = Algorithm.HMAC256(secretKey);
     var expiresIn = Instant.now().plus(Duration.ofHours(8));
     var token = JWT.create().withIssuer("planner")
     .withExpiresAt(expiresIn)

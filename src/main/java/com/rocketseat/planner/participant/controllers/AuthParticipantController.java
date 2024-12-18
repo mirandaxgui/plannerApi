@@ -34,9 +34,8 @@ public class AuthParticipantController {
       jwtCookie.setSecure(true); // Somente para HTTPS
       jwtCookie.setPath("/"); // Define o cookie para todas as rotas
       jwtCookie.setMaxAge(60 * 60 * 8); // Define a duração do cookie, aqui 8 horas
+      response.addHeader("Set-Cookie", "token=" + jwtToken + "; Path=/; HttpOnly; Secure; Max-Age=28800; SameSite=None");
       
-      // Adicionar o cookie à resposta
-      response.addCookie(jwtCookie);
 
       return ResponseEntity.ok().body("Autenticação realizada com sucesso!");
     } catch (AuthenticationException e) {
